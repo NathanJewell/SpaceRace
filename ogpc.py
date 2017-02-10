@@ -13,10 +13,10 @@ class Station:
 	#self.size = 5
 	#self.position = (0, 0)
 
-	def __init__(self, rate, owner):
+	def __init__(self, rate, owner, position):
 		self.rate = rate
 		self.size = int(5*math.sqrt(self.rate) + 10)
-		self.position = (self.size*10, self.size*13)
+		self.position = position
 		self.owner = owner
 		self.contents = 100
 
@@ -48,7 +48,7 @@ class Player:
 		self.invcolor = invcolor
 		self.name = name
 
-class Earth:
+#class Earth:
 
 
 
@@ -65,8 +65,12 @@ class Game:
 
 	def setup(self):
 		self.players.append(Player((128,128,128), (255, 0, 0), "neutral"))
-		self.objects.append(Station(4, self.players[0]))
-		self.objects.append(Station(10, self.players[0]))
+		self.players.append(Player((0, 255, 0), (0, 0, 255), "player2"))
+		self.objects.append(Station(4, self.players[0], (100, 200)))
+		self.objects.append(Station(10, self.players[0], (200, 300)))
+
+
+		self.objects.append(Station(1000, self.players[1], (300, 500)))
 
 		self.gamefont = pygame.font.SysFont("monospace", 15)
 
