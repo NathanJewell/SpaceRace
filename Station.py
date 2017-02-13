@@ -12,18 +12,13 @@ import random
 
 
 class Station:
-    #self.rate = 1
-    #self.contents = 100
-    #self.owner = 0
-    #self.size = 5
-    #self.position = (0, 0)
 
     def __init__(self, rate, owner, position):
         self.rate = rate  #generation speed per timestep
-        self.size = int(5*math.sqrt(self.rate) + 10)
+        self.size = int(10*math.sqrt(self.rate) + 10)
         self.position = position
         self.owner = owner #owner is a reference to a player
-        self.contents = 100
+        self.contents = 0
         self.selected = False
         self.mouseSelect = False
 
@@ -32,6 +27,9 @@ class Station:
 
     def attack(self, amount): #attack something with this amount
         self.contents -= amount
+
+    def defend(self, amount):   #defending is losing troops so same as sending troops
+        self.attack(amount)
 
     def recieve(self, amount): #recieving contents from friendly
         self.content += amount

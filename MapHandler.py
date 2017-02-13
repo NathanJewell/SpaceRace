@@ -32,13 +32,14 @@ class MapHandler:
         self.player = self.players[1]
 
         self.selection = []
+        self.attackratio = .5
 
         self.generate(1024, 768, 10)
 
     def generate(self, sizex, sizey, numstations):  #generating a simple random map
 
-        maxRate = 100
-        minRate = 10
+        maxRate = 20
+        minRate = 1
         for x in range(numstations):
             rate = random.randint(minRate, maxRate)
             player = self.players[random.randint(0, len(self.players))-1]
@@ -56,6 +57,19 @@ class MapHandler:
                         conflict = True
                         break
             self.objects.append(station)
+
+    def doAttack(self, mousePos):
+        target = None
+        for o in self.objects:
+            for p in points:
+                if utils.inCircle(mousePos, o.size, o.position):
+                    if o.owner != self.player:
+                        toAttack = o
+        if target:
+            for o in self.selection:
+                target.attack(o.contents*self.attackratio)
+
+
 
 
     def selectPoints(self, points, mouse=False):

@@ -75,6 +75,7 @@ class Game:
                             self.selection = None
                             self.dragging = False
                         if not self.shifting:
+                            self.mapHandler.doAttack(self.MousePos)
                             self.clickQueue.clear()
                 elif event.type == pygame.MOUSEMOTION:
                     self.mousePos = event.pos
