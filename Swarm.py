@@ -15,10 +15,11 @@ class Swarm:
 
         #game params
         self.size = amount
-        self.speed = 10 #pixels per second
+        self.speed = 50 #pixels per second
         self.origin = origin
         self.destination = destination
-        self.slope = utils.slope(origin.position, destination.position)
+        self.slope = utils.normDiff(origin.position, destination.position)
+        #self.angle = math.atan(self.slope)
         self.length = utils.distance(origin.position, destination.position)
         self.center = origin.position
         self.ships = []
@@ -43,19 +44,23 @@ class Swarm:
             return (pos[0] + random.randint(-dist, dist), pos[1] + random.randint(-dist, dist))
 
         for m in range(self.motherships):
-            self.ships.append(Ship(10, self.origin.owner.color, randPos(self.origin.position, 100)))
+            self.ships.append(Ship(10, 1000, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
         for c in range(self.cruisers):
-            self.ships.append(Ship(5, self.origin.owner.color, randPos(self.origin.position, 100)))
+            self.ships.append(Ship(5, 100, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
         for f in range(self.fighters):
-            self.ships.append(Ship(2, self.origin.owner.color, randPos(self.origin.position, 100)))
+            self.ships.append(Ship(2, 1, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
+
 
     def update(self, dt): #time change in milliseconds
         dt/=1000
-        dpx = self.speed*dt*-1
-        dpy = self.speed*dt*self.slope*-1
+        dt *= self.speed
 
         for s in self.ships:
-            s.addPosition((dpx, dpy))
+            if inCircle(s.position, self.destination.position, self.destination.size + s.size):
+                destination.attack(s.amount)
+                self.ships.remove(s)
+            s.update(dt)
+
 
 
     def draw(self, screen):
@@ -67,14 +72,22 @@ class Swarm:
 
 
 class Ship:
-    def __init__(self, size, color, position):
+    def __init__(self, size, amount, color, position, destination):
         self.size = size
+        self.amount = amount
         self.color = color + (100,) #inserting transparency value
         self.position = position
         self.intposition = (int(position[0]), int(position[1]))
+        self.slope = utils.normDiff(self.position, destination)
+
 
     def addPosition(self, delta):
         self.position = (self.position[0] + delta[0], self.position[1] + delta[1])
+
+    def update(self, dt):
+        dpx = dt*self.slope[0]*-1
+        dpy = dt*self.slope[1]*-1
+        self.addPosition((dpx, dpy))
 
     def draw(self, screen):
         self.intposition = (int(self.position[0]), int(self.position[1]))

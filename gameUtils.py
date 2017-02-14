@@ -50,7 +50,8 @@ def distance(p1, p2):
     ydiff = p1[1] - p2[1]
     return math.sqrt(xdiff**2 + ydiff**2)
 
-def slope(p1, p2):
+def normDiff(p1, p2):
     xdiff = p1[0] - p2[0]
     ydiff = p1[1] - p2[1]
-    return ydiff/xdiff
+    d = distance(p1, p2)
+    return (xdiff/d, ydiff/d)

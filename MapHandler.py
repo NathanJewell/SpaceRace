@@ -67,13 +67,15 @@ class MapHandler:
         target = None
         for o in self.objects:
             if utils.inCircle(mousePos, o.size, o.position):
-                if o.owner != self.player:
                     target = o
         if target:
             for o in self.selection:
-                self.swarms.append(Swarm(int(o.contents * self.attackratio), o, target))
-                o.attack(self.attackratio, target)
-
+                if target != o:
+                    self.swarms.append(Swarm(int(o.contents * self.attackratio), o, target))
+                    if o.owner != self.player:
+                        o.attack(self.attackratio, target)
+                    else:
+                        o.send(self.attackratio, target)
 
             if target.contents <= 0:
                 target.owner = self.player
