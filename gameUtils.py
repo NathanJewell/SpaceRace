@@ -1,5 +1,6 @@
 import math
 import pygame.gfxdraw
+import Vector
 
 def inCircle(pos, radius, p): #is point p=(x,y) within circle with r=radius(x,y) and position=pos
     r2 = radius*radius
@@ -42,3 +43,14 @@ def aaLine(screen, X0, X1, thickness, color):
 
     pygame.gfxdraw.aapolygon(screen, (UL, UR, BR, BL), color)
     pygame.gfxdraw.filled_polygon(screen, (UL, UR, BR, BL), color)
+
+
+def distance(p1, p2):
+    xdiff = p1[0] - p2[0]
+    ydiff = p1[1] - p2[1]
+    return math.sqrt(xdiff**2 + ydiff**2)
+
+def slope(p1, p2):
+    xdiff = p1[0] - p2[0]
+    ydiff = p1[1] - p2[1]
+    return ydiff/xdiff

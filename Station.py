@@ -25,13 +25,15 @@ class Station:
     def generate(self):
         self.contents += self.rate
 
-    def attack(self, amount): #attack something with this amount
-        self.contents -= amount
+    def attack(self, ratio, target): #attack something with this porportion of the total contents
+        ratio = int(ratio*self.contents)
+        self.contents -= ratio
+        target.contents -= ratio
 
     def defend(self, amount):   #defending is losing troops so same as sending troops
         self.attack(amount)
 
-    def recieve(self, amount): #recieving contents from friendly
+    def send(self, amount): #recieving contents from friendly
         self.content += amount
 
     def draw(self, screen, font):

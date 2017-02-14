@@ -11,6 +11,7 @@ import random
 #internal dependencies
 from Station import *
 from Player import *
+from Swarm import *
 
 
 class MapHandler:
@@ -19,8 +20,9 @@ class MapHandler:
         generateMap = False
         self.lastelapsed = 0
         self.objects = []
+        self.swarms = []
         self.players = []
-        self.dt = 1000	#units generate every one second
+        self.tick = 1000	#units generate every one second
 
         #setting up system
         self.players.append(Player((128,128,128), (255, 0, 0), "neutral"))
@@ -35,6 +37,9 @@ class MapHandler:
         self.attackratio = .5
 
         self.generate(1024, 768, 10)
+
+        self.elapsed = 0
+        self.dt = 0
 
     def generate(self, sizex, sizey, numstations):  #generating a simple random map
 
@@ -61,16 +66,18 @@ class MapHandler:
     def doAttack(self, mousePos):
         target = None
         for o in self.objects:
-            for p in points:
-                if utils.inCircle(mousePos, o.size, o.position):
-                    if o.owner != self.player:
-                        toAttack = o
+            if utils.inCircle(mousePos, o.size, o.position):
+                if o.owner != self.player:
+                    target = o
         if target:
             for o in self.selection:
-                target.attack(o.contents*self.attackratio)
+                self.swarms.append(Swarm(int(o.contents * self.attackratio), o, target))
+                o.attack(self.attackratio, target)
 
 
-
+            if target.contents <= 0:
+                target.owner = self.player
+                target.contents = abs(target.contents)
 
     def selectPoints(self, points, mouse=False):
         for o in self.objects:
@@ -83,14 +90,8 @@ class MapHandler:
                         o.mouseSelect = True
 
     def selectRect(self, rect, mouse=False):
-        if not mouse:
-            print("ehree")
-            print(rect)
         for o in self.objects:
             if utils.inRect(rect, o.position) and o.owner == self.player:
-                if not mouse:
-                    print("asdfasldkf")
-                    print(rect)
                 if not mouse:
                     o.selected = True
                     self.selection.append(o)
@@ -116,13 +117,17 @@ class MapHandler:
                 self.selection.append(o)
 
     def update(self, elapsed):
-        self.selection.clear()
-        if(elapsed-self.lastelapsed >= self.dt): #if it is a dt or greater
-            self.lastelapsed = elapsed + (elapsed-self.lastelapsed-1000)
+        self.dt = elapsed-self.elapsed
+        self.elapsed = elapsed
+        if(elapsed-self.lastelapsed >= self.tick): #if it is a tick or greater
+            self.lastelapsed = elapsed + (elapsed-self.lastelapsed-self.tick)
             for o in self.objects:
                 o.generate()
+        for s in self.swarms:
+            s.update(self.dt)
 
-    def draw(self, screen, font, mousePos):
+    def draw(self, screen, font, mousePos, elapsed):
+
         for o in self.objects:
             o.draw(screen, font)
 
@@ -132,3 +137,6 @@ class MapHandler:
                     pygame.gfxdraw.line(screen, o.position[0], o.position[1], mousePos[0], mousePos[1], o.owner.selectcolor)
 
                 o.mouseSelect = False
+
+        for s in self.swarms:
+            s.draw(screen)

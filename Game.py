@@ -64,6 +64,7 @@ class Game:
                         if self.shifting:
                             self.clickQueue.append(self.mousePos)
                         else:
+                            self.mapHandler.doAttack(self.mousePos)
                             self.mapHandler.deselectAll()
                 elif event.type == pygame.MOUSEBUTTONUP:
                     self.mousePos = event.pos
@@ -75,7 +76,6 @@ class Game:
                             self.selection = None
                             self.dragging = False
                         if not self.shifting:
-                            self.mapHandler.doAttack(self.MousePos)
                             self.clickQueue.clear()
                 elif event.type == pygame.MOUSEMOTION:
                     self.mousePos = event.pos
@@ -98,10 +98,14 @@ class Game:
                 self.mapHandler.selectPoints(self.clickQueue)
                 self.clickQueue.clear()
             self.mapHandler.selectHoverPoint(self.mousePos)
+
+
+
+
             #drawing
-            self.mapHandler.draw(self.screen, self.gamefont, self.mousePos)
+            self.mapHandler.draw(self.screen, self.gamefont, self.mousePos, elapsed)
 
-
+            #drawing selection box
             if self.selection:
                 #use muted or highlighted version of user color for selection
                 width = self.selection[0][0] - self.selection[1][0]
@@ -110,14 +114,10 @@ class Game:
                 posy = self.selection[0][1]
                 pygame.draw.rect(self.transparentScreen, (200, 200, 200, 128), (posx, posy, -1*width, -1*height))
 
-            for p in self.clickQueue:
-                pygame.draw.circle(self.screen, (200, 200, 200), p, 5)
-            #self.inputHandler.draw(self.screen)
-
             self.screen.blit(self.transparentScreen, (0, 0))
             pygame.display.flip() #flip buffer
 
-            #controlling fps by waiting for max fps
+            #controlling fps by waiting for any extra time to pass
             frametime = time.time() * 1000 -framestart
             waittime = int(targetFrametimeMs - frametime)
             if waittime > 0:
