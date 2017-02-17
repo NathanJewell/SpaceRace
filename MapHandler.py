@@ -43,7 +43,7 @@ class MapHandler:
 
     def generate(self, sizex, sizey, numstations):  #generating a simple random map
 
-        maxRate = 20
+        maxRate = 10
         minRate = 1
         for x in range(numstations):
             rate = random.randint(minRate, maxRate)
@@ -72,14 +72,6 @@ class MapHandler:
             for o in self.selection:
                 if target != o:
                     self.swarms.append(Swarm(int(o.contents * self.attackratio), o, target))
-                    if o.owner != self.player:
-                        o.attack(self.attackratio, target)
-                    else:
-                        o.send(self.attackratio, target)
-
-            if target.contents <= 0:
-                target.owner = self.player
-                target.contents = abs(target.contents)
 
     def selectPoints(self, points, mouse=False):
         for o in self.objects:
@@ -127,6 +119,8 @@ class MapHandler:
                 o.generate()
         for s in self.swarms:
             s.update(self.dt)
+            if len(s.ships) == 0:
+                self.swarms.remove(s)
 
     def draw(self, screen, font, mousePos, elapsed):
 

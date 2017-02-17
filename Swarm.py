@@ -23,30 +23,29 @@ class Swarm:
         self.length = utils.distance(origin.position, destination.position)
         self.center = origin.position
         self.ships = []
-        #flocking params
-        self.sightAngle = 270
-        self.sightRadius = 50
+
 
         self.transparentScreen = pygame.Surface((1024, 768), pygame.SRCALPHA) #this should be moved to swarm handler
+
+        self.origin.contents -= amount
 
         self.spawn()
 
     def spawn(self):
         self.motherships = self.size//1000
         self.cruisers = (self.size % 1000 ) // 100
-        self.fighters  = self.size % 100
-        print(self.size)
-        print(self.motherships)
-        print(self.cruisers)
-        print(self.fighters)
+        self.scrappers = (self.size % 100) // 10
+        self.fighters  = self.size % 10
 
         def randPos(pos, dist):
             return (pos[0] + random.randint(-dist, dist), pos[1] + random.randint(-dist, dist))
 
         for m in range(self.motherships):
-            self.ships.append(Ship(10, 1000, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
+            self.ships.append(Ship(25, 1000, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
         for c in range(self.cruisers):
-            self.ships.append(Ship(5, 100, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
+            self.ships.append(Ship(10, 100, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
+        for s in range(self.scrappers):
+            self.ships.append(Ship(5, 10, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
         for f in range(self.fighters):
             self.ships.append(Ship(2, 1, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
 
@@ -56,12 +55,17 @@ class Swarm:
         dt *= self.speed
 
         for s in self.ships:
-            if inCircle(s.position, self.destination.position, self.destination.size + s.size):
-                destination.attack(s.amount)
+            if utils.inCircle(s.position, self.destination.size + s.size, self.destination.position):
+                if self.destination.owner == self.origin.owner:
+                    self.destination.recieve(s.amount)
+                else:
+                    self.destination.defend(s.amount)
                 self.ships.remove(s)
             s.update(dt)
 
-
+        if self.destination.contents <= 0:
+            self.destination.owner = self.origin.owner
+            self.destination.contents = abs(self.destination.contents)
 
     def draw(self, screen):
         self.transparentScreen.fill((0, 0, 0, 0))
@@ -91,4 +95,5 @@ class Ship:
 
     def draw(self, screen):
         self.intposition = (int(self.position[0]), int(self.position[1]))
-        pygame.draw.circle(screen, self.color, self.intposition, self.size)
+        goodgfx.circle(screen, self.color, self.intposition, self.size, 2)
+        #pygame.draw.circle(screen, self.color, self.intposition, self.size)

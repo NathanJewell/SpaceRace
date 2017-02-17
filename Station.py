@@ -25,17 +25,14 @@ class Station:
     def generate(self):
         self.contents += self.rate
 
-    def attack(self, ratio, target): #attack something with this porportion of the total contents
-        ratio = int(ratio*self.contents)
-        self.contents -= ratio
-        target.contents -= ratio
-
     def defend(self, amount):   #defending is losing troops so same as sending troops
-        self.attack(amount)
+        self.contents -= amount
 
-    def send(self, ratio, target): #recieving contents from friendly
-        self.contents -= int(ratio*self.contents)
-        target.contents += int(ratio*self.contents)
+    def send(self, amount): #recieving contents from friendly
+        self.contents -= amount
+
+    def recieve(self, amount):
+        self.contents += amount
 
     def draw(self, screen, font):
         pygame.draw.circle(screen, self.owner.color, self.position, self.size)
