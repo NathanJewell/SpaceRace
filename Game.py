@@ -38,11 +38,11 @@ class Game:
 
     def start(self):
         self.setup()
-        targetFPS = 120;
+        targetFPS = 480;
         targetFrametimeMs = int(1000/targetFPS)
         t = time.time() * 1000
         lastelapsed = 0
-
+        framerateText = self.gamefont.render("na", 1, (255, 255, 255));
         while not self.end:	#main game loop
 
             framestart = time.time() * 1000
@@ -115,10 +115,16 @@ class Game:
                 pygame.draw.rect(self.transparentScreen, (200, 200, 200, 128), (posx, posy, -1*width, -1*height))
 
             self.screen.blit(self.transparentScreen, (0, 0))
+            self.screen.blit(framerateText, (200, 100))
             pygame.display.flip() #flip buffer
 
             #controlling fps by waiting for any extra time to pass
             frametime = time.time() * 1000 -framestart
+            #font.render(str(self.contents), 1, self.owner.invcolor);
             waittime = int(targetFrametimeMs - frametime)
+            framerateText = self.gamefont.render(str(frametime), 1, (255, 255, 255));
+
+
+
             if waittime > 0:
                 pygame.time.wait(waittime)

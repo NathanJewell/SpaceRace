@@ -80,20 +80,15 @@ class Ship:
         self.size = size
         self.amount = amount
         self.color = color + (100,) #inserting transparency value
-        self.position = position
-        self.intposition = (int(position[0]), int(position[1]))
+        self.position = [position[0], position[1]]
+        self.intposition = [int(position[0]), int(position[1])]
         self.slope = utils.normDiff(self.position, destination)
 
-
-    def addPosition(self, delta):
-        self.position = (self.position[0] + delta[0], self.position[1] + delta[1])
-
     def update(self, dt):
-        dpx = dt*self.slope[0]*-1
-        dpy = dt*self.slope[1]*-1
-        self.addPosition((dpx, dpy))
+        self.position[0] += dt*self.slope[0]*-1
+        self.position[1] += dt*self.slope[1]*-1
 
     def draw(self, screen):
-        self.intposition = (int(self.position[0]), int(self.position[1]))
+        self.intposition = [int(a) for a in self.position]
         goodgfx.circle(screen, self.color, self.intposition, self.size, 2)
         #pygame.draw.circle(screen, self.color, self.intposition, self.size)
