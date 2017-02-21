@@ -13,6 +13,9 @@ from MapHandler import *
 from Station import *
 from Player import *
 
+import accelerate
+from accelerate import profiler
+
 class Game:
 
     def __init__(self):
@@ -36,6 +39,9 @@ class Game:
 
         self.mapHandler = MapHandler()
 
+
+
+
     def start(self):
         self.setup()
         targetFPS = 480;
@@ -43,6 +49,7 @@ class Game:
         t = time.time() * 1000
         lastelapsed = 0
         framerateText = self.gamefont.render("na", 1, (255, 255, 255));
+        self.p = profiler.Profile()
         while not self.end:	#main game loop
 
             framestart = time.time() * 1000
@@ -84,6 +91,7 @@ class Game:
                     if self.mouseDown and self.shifting:
                         self.selection = (self.mouseDownPos, self.mousePos) #selection is updated
                 if event.type == pygame.QUIT:
+                    self.p.print_stats()
                     self.end = True
 
             self.screen.fill((0, 0, 0))
@@ -91,6 +99,8 @@ class Game:
             #updating
 
             #end = self.inputHandler.update()
+            self.p.enable(subcalls=True)
+
             self.mapHandler.update(elapsed)
             if self.selection:
                 self.mapHandler.selectHoverRect(self.selection)
@@ -105,6 +115,7 @@ class Game:
             #drawing
             self.mapHandler.draw(self.screen, self.gamefont, self.mousePos, elapsed)
 
+            self.p.disable()
             #drawing selection box
             if self.selection:
                 #use muted or highlighted version of user color for selection

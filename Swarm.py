@@ -24,9 +24,6 @@ class Swarm:
         self.center = origin.position
         self.ships = []
 
-
-        self.transparentScreen = pygame.Surface((1024, 768), pygame.SRCALPHA) #this should be moved to swarm handler
-
         self.origin.contents -= amount
 
         self.spawn()
@@ -68,10 +65,9 @@ class Swarm:
             self.destination.contents = abs(self.destination.contents)
 
     def draw(self, screen):
-        self.transparentScreen.fill((0, 0, 0, 0))
         for s in self.ships:
-            s.draw(self.transparentScreen)
-        screen.blit(self.transparentScreen, (0, 0))
+            s.draw(screen)
+
 
 
 
@@ -85,10 +81,10 @@ class Ship:
         self.slope = utils.normDiff(self.position, destination)
 
     def update(self, dt):
-        self.position[0] += dt*self.slope[0]*-1
-        self.position[1] += dt*self.slope[1]*-1
+        self.position[0] -= dt*self.slope[0]
+        self.position[1] -= dt*self.slope[1]
 
     def draw(self, screen):
         self.intposition = [int(a) for a in self.position]
-        goodgfx.circle(screen, self.color, self.intposition, self.size, 2)
-        #pygame.draw.circle(screen, self.color, self.intposition, self.size)
+        #goodgfx.circle(screen, self.color, self.intposition, self.size, 2)
+        pygame.draw.circle(screen, self.color, self.intposition, self.size)

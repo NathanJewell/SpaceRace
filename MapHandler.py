@@ -14,6 +14,7 @@ from Player import *
 from Swarm import *
 
 
+
 class MapHandler:
 
     def __init__(self):
@@ -27,9 +28,6 @@ class MapHandler:
         #setting up system
         self.players.append(Player((128,128,128), (255, 0, 0), "neutral"))
         self.players.append(Player((0, 255, 0), (255, 255, 255), "player1"))
-        #self.objects.append(Station(4, self.players[0], (100, 200)))
-        #self.objects.append(Station(10, self.players[0], (200, 300)))
-        #self.objects.append(Station(1000, self.players[1], (300, 500)))
 
         self.player = self.players[1]
 
@@ -41,10 +39,11 @@ class MapHandler:
         self.elapsed = 0
         self.dt = 0
 
-    def generate(self, sizex, sizey, numstations):  #generating a simple random map
+        self.transparentScreen = pygame.Surface((1024, 768), pygame.SRCALPHA) #this should be moved to swarm handler
 
-        maxRate = 10
-        minRate = 1
+    def generate(self, sizex, sizey, numstations):  #generating a simple random map
+        maxRate = 120
+        minRate = 20
         for x in range(numstations):
             rate = random.randint(minRate, maxRate)
             player = self.players[random.randint(0, len(self.players))-1]
@@ -113,26 +112,31 @@ class MapHandler:
     def update(self, elapsed):
         self.dt = elapsed-self.elapsed
         self.elapsed = elapsed
-        if(elapsed-self.lastelapsed >= self.tick): #if it is a tick or greater
-            self.lastelapsed = elapsed + (elapsed-self.lastelapsed-self.tick)
-            for o in self.objects:
-                o.generate()
+        for o in self.objects:
+            o.update(self.dt)
+
         for s in self.swarms:
             s.update(self.dt)
             if len(s.ships) == 0:
                 self.swarms.remove(s)
 
+
     def draw(self, screen, font, mousePos, elapsed):
+        self.transparentScreen.fill((0, 0, 0, 0))
 
         for o in self.objects:
             o.draw(screen, font)
 
             if o.selected or o.mouseSelect:
-                goodgfx.circle(screen, o.owner.selectcolor, o.position, o.size + 10, 5)
+                #goodgfx.circle(screen, o.owner.selectcolor, o.position, o.size + 10, 5)
+                pygame.draw.circle(screen, o.owner.selectcolor, o.position, o.size+10)
                 if not o.mouseSelect:
                     pygame.gfxdraw.line(screen, o.position[0], o.position[1], mousePos[0], mousePos[1], o.owner.selectcolor)
+
 
                 o.mouseSelect = False
 
         for s in self.swarms:
-            s.draw(screen)
+            s.draw(self.transparentScreen)
+
+        screen.blit(self.transparentScreen, (0, 0))
