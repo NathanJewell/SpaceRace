@@ -11,7 +11,7 @@ import random
 class Swarm:
 
 
-    def __init__(self, amount, origin, destination): #amount in transit, objects that are origin and destination
+    def __init__(self, amount, origin, destination, graphics): #amount in transit, objects that are origin and destination
 
         #game params
         self.size = amount
@@ -25,7 +25,7 @@ class Swarm:
         self.ships = []
 
         self.origin.contents -= amount
-
+        self.graphics = graphics
         self.spawn()
 
     def spawn(self):
@@ -38,13 +38,13 @@ class Swarm:
             return (pos[0] + random.randint(-dist, dist), pos[1] + random.randint(-dist, dist))
 
         for m in range(self.motherships):
-            self.ships.append(Ship(25, 1000, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
+            self.ships.append(Ship(25, 1000, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position, self.graphics[1]))
         for c in range(self.cruisers):
-            self.ships.append(Ship(10, 100, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
+            self.ships.append(Ship(10, 100, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position, self.graphics[1]))
         for s in range(self.scrappers):
-            self.ships.append(Ship(5, 10, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
+            self.ships.append(Ship(5, 10, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position, self.graphics[3]))
         for f in range(self.fighters):
-            self.ships.append(Ship(2, 1, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position))
+            self.ships.append(Ship(2, 1, self.origin.owner.color, randPos(self.origin.position, 100), self.destination.position, self.graphics[3]))
 
 
     def update(self, dt): #time change in milliseconds
@@ -72,8 +72,10 @@ class Swarm:
 
 
 class Ship:
-    def __init__(self, size, amount, color, position, destination):
+    def __init__(self, size, amount, color, position, destination, sprite):
         self.size = size
+        self.sprite = sprite
+        self.halfsize = self.size//2
         self.amount = amount
         self.color = color + (100,) #inserting transparency value
         self.position = [position[0], position[1]]
@@ -85,6 +87,12 @@ class Ship:
         self.position[1] -= dt*self.slope[1]
 
     def draw(self, screen):
-        self.intposition = [int(a) for a in self.position]
+        self.intposition = [int(a) for a in self.position] #middle
+        BR = [self.intposition[0] + self.halfsize, self.intposition[1]+self.halfsize]
+        TL = [self.intposition[0] - self.halfsize, self.intposition[1]-self.halfsize]
+
+        screen.blit(self.sprite, [TL, BR])
+
+
         #goodgfx.circle(screen, self.color, self.intposition, self.size, 2)
-        pygame.draw.circle(screen, self.color, self.intposition, self.size)
+        #pygame.draw.circle(screen, self.color, self.intposition, self.size)

@@ -41,6 +41,12 @@ class MapHandler:
 
         self.transparentScreen = pygame.Surface((1024, 768), pygame.SRCALPHA) #this should be moved to swarm handler
 
+        mothership = pygame.image.load("mothership.png")
+        cruiser = pygame.image.load("cruiser.png")
+        scrapper = pygame.image.load("scrapper.png")
+        fighter = pygame.image.load("fighter.png")
+        self.swarmGraphic = [mothership, cruiser, scrapper, fighter]
+
     def generate(self, sizex, sizey, numstations):  #generating a simple random map
         maxRate = 120
         minRate = 20
@@ -70,7 +76,7 @@ class MapHandler:
         if target:
             for o in self.selection:
                 if target != o:
-                    self.swarms.append(Swarm(int(o.contents * self.attackratio), o, target))
+                    self.swarms.append(Swarm(int(o.contents * self.attackratio), o, target, self.swarmGraphic))
 
     def selectPoints(self, points, mouse=False):
         for o in self.objects:

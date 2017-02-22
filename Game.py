@@ -133,7 +133,7 @@ class Game:
             frametime = time.time() * 1000 -framestart
             #font.render(str(self.contents), 1, self.owner.invcolor);
             waittime = int(targetFrametimeMs - frametime)
-            framerateText = self.gamefont.render(str(frametime), 1, (255, 255, 255));
+            framerateText = self.gamefont.render(str(1000/frametime), 1, (255, 255, 255));
 
 
 
