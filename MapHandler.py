@@ -24,6 +24,8 @@ class MapHandler:
         self.swarms = []
         self.players = []
         self.tick = 1000	#units generate every one second
+        self.swarmBatch = pyglet.graphics.Batch();
+        self.stationBatch = pyglet.graphics.Batch();
 
         #setting up system
         self.players.append(Player((128,128,128), (255, 0, 0), "neutral"))
@@ -39,13 +41,16 @@ class MapHandler:
         self.elapsed = 0
         self.dt = 0
 
-        self.transparentScreen = pygame.Surface((1024, 768), pygame.SRCALPHA) #this should be moved to swarm handler
+        #self.transparentScreen = pygame.Surface((1920, 1080), pygame.SRCALPHA) #this should be moved to swarm handler
 
-        mothership = pygame.image.load("mothership.png")
-        cruiser = pygame.image.load("cruiser.png")
-        scrapper = pygame.image.load("scrapper.png")
-        fighter = pygame.image.load("fighter.png")
+
+        mothership = pyglet.resource.image("mothership.png")
+        cruiser = pyglet.resource.image("cruiser.png")
+        scrapper = pyglet.resource.image("scrapper.png")
+        fighter = pyglet.resource.image("fighter.png")
         self.swarmGraphic = [mothership, cruiser, scrapper, fighter]
+        for i in self.swarmGraphics:
+            utils.center_image(i)
 
     def generate(self, sizex, sizey, numstations):  #generating a simple random map
         maxRate = 120
@@ -131,7 +136,7 @@ class MapHandler:
         self.transparentScreen.fill((0, 0, 0, 0))
 
         for o in self.objects:
-            o.draw(screen, font)
+            o.draw(stationBatch)
 
             if o.selected or o.mouseSelect:
                 #goodgfx.circle(screen, o.owner.selectcolor, o.position, o.size + 10, 5)
@@ -143,6 +148,7 @@ class MapHandler:
                 o.mouseSelect = False
 
         for s in self.swarms:
-            s.draw(self.transparentScreen)
+            s.draw(self.swarmBatch)
 
-        screen.blit(self.transparentScreen, (0, 0))
+        self.swarmBatch.draw()
+        self.stationBatch.draw()

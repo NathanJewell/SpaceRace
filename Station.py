@@ -23,6 +23,8 @@ class Station:
         self.selected = False
         self.mouseSelect = False
         self.elapsed = 0
+        self.nametext = pyglet.text.Label(text=self.owner.name, x=self.position[0], y=self.position[1]+self.size)) #self.owner.color
+
 
     def defend(self, amount):   #defending is losing troops so same as sending troops
         self.contents -= amount
@@ -39,10 +41,11 @@ class Station:
             self.elapsed -= self.interval
             self.contents += 1
 
-    def draw(self, screen, font):
+    def draw(self, batch):
         pygame.draw.circle(screen, self.owner.color, self.position, self.size)
-        nametext = font.render(self.owner.name, 1, self.owner.invcolor)
-        contenttext = font.render(str(self.contents), 1, self.owner.invcolor);
 
-        screen.blit(contenttext, (self.position[0] - contenttext.get_rect().width/2, self.position[1] - contenttext.get_rect().height/2))
-        screen.blit(nametext, (self.position[0] - nametext.get_rect().width/2, self.position[1] - nametext.get_rect().height - self.size))
+        nametext = pyglet.text.Label(text=self.owner.name, x=self.position[0], y=self.position[1]+self.size, batch=batch) #self.owner.color
+
+        contenttext = pyglet.text.Label(text=self.contents, x=self.position[0], y=self.position[1], batch=batch)
+        self.nametext.draw()
+        contenttext.draw()

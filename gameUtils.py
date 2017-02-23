@@ -1,6 +1,12 @@
 import math
+import pyglet
 import pygame.gfxdraw
 import Vector
+
+def center_image(image):
+    """Sets an image's anchor point to its center"""
+    image.anchor_x = image.width/2
+    image.anchor_y = image.height/2
 
 def inCircle(pos, radius, p): #is point p=(x,y) within circle with r=radius(x,y) and position=pos
     r2 = radius*radius

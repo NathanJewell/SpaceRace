@@ -1,4 +1,5 @@
 #external dependencies
+import pyglet
 import pygame
 from pygame.locals import *
 from pygame import gfxdraw
@@ -20,8 +21,7 @@ class Game:
 
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((1024, 768), DOUBLEBUF)
-        self.transparentScreen = pygame.Surface((1024, 768), pygame.SRCALPHA)
+        self.screen = pyglet.winow.Window(800, 800)
         self.end = False
 
 
@@ -39,19 +39,34 @@ class Game:
 
         self.mapHandler = MapHandler()
 
-
-
-
     def start(self):
         self.setup()
-        targetFPS = 480;
-        targetFrametimeMs = int(1000/targetFPS)
+        self.targetFPS = 480;
+        self.targetFrametimeMs = int(1000/targetFPS)
         t = time.time() * 1000
-        lastelapsed = 0
-        framerateText = self.gamefont.render("na", 1, (255, 255, 255));
-        self.p = profiler.Profile()
-        while not self.end:	#main game loop
+        self.lastelapsed = 0
+        pyglet.clock.schedule_interval(self.on_update, 1/120.0);  #setting update max frames to 120
+        pyglet.app.run()
 
+
+    @game_window.event
+    def on_draw():
+        self.mapHandler.draw(self.mousePos, elapsed)
+
+        self.p.disable()
+        #drawing selection box
+        if self.selection:
+            #use muted or highlighted version of user color for selection
+            width = self.selection[0][0] - self.selection[1][0]
+            height = self.selection[0][1] - self.selection[1][1]
+            posx = self.selection[0][0]
+            posy = self.selection[0][1]
+            pygame.draw.rect(self.transparentScreen, (200, 200, 200, 128), (posx, posy, -1*width, -1*height))
+
+        fpstext = pyglet.text.Label(text=framerateText, x=self.position[0], y=self.position[1]+self.size, batch=batch) #self.owner.color
+        fpstext.draw()
+
+    def on_update():
             framestart = time.time() * 1000
             elapsed = int((framestart-t)) #elapsed time in ms
 
@@ -98,9 +113,6 @@ class Game:
             self.transparentScreen.fill((0, 0, 0, 0))
             #updating
 
-            #end = self.inputHandler.update()
-            self.p.enable(subcalls=True)
-
             self.mapHandler.update(elapsed)
             if self.selection:
                 self.mapHandler.selectHoverRect(self.selection)
@@ -113,21 +125,7 @@ class Game:
 
 
             #drawing
-            self.mapHandler.draw(self.screen, self.gamefont, self.mousePos, elapsed)
 
-            self.p.disable()
-            #drawing selection box
-            if self.selection:
-                #use muted or highlighted version of user color for selection
-                width = self.selection[0][0] - self.selection[1][0]
-                height = self.selection[0][1] - self.selection[1][1]
-                posx = self.selection[0][0]
-                posy = self.selection[0][1]
-                pygame.draw.rect(self.transparentScreen, (200, 200, 200, 128), (posx, posy, -1*width, -1*height))
-
-            self.screen.blit(self.transparentScreen, (0, 0))
-            self.screen.blit(framerateText, (200, 100))
-            pygame.display.flip() #flip buffer
 
             #controlling fps by waiting for any extra time to pass
             frametime = time.time() * 1000 -framestart
