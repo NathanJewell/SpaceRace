@@ -48,7 +48,7 @@ class MapHandler:
         cruiser = pyglet.resource.image("cruiser.png")
         scrapper = pyglet.resource.image("scrapper.png")
         fighter = pyglet.resource.image("fighter.png")
-        self.swarmGraphic = [mothership, cruiser, scrapper, fighter]
+        self.swarmGraphics = [mothership, cruiser, scrapper, fighter]
         for i in self.swarmGraphics:
             utils.center_image(i)
 

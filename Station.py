@@ -1,7 +1,5 @@
 #external dependencies
-import pygame
-from pygame.locals import *
-from pygame import gfxdraw
+import pyglet
 import math
 import time
 import drawshapes as goodgfx
@@ -23,7 +21,7 @@ class Station:
         self.selected = False
         self.mouseSelect = False
         self.elapsed = 0
-        self.nametext = pyglet.text.Label(text=self.owner.name, x=self.position[0], y=self.position[1]+self.size)) #self.owner.color
+
 
 
     def defend(self, amount):   #defending is losing troops so same as sending troops
@@ -42,10 +40,10 @@ class Station:
             self.contents += 1
 
     def draw(self, batch):
-        pygame.draw.circle(screen, self.owner.color, self.position, self.size)
+        pygame.draw.circle(screen, self.owner.color, self.position, self.size)  #self.owner.color
 
         nametext = pyglet.text.Label(text=self.owner.name, x=self.position[0], y=self.position[1]+self.size, batch=batch) #self.owner.color
 
         contenttext = pyglet.text.Label(text=self.contents, x=self.position[0], y=self.position[1], batch=batch)
-        self.nametext.draw()
+        nametext.draw()
         contenttext.draw()

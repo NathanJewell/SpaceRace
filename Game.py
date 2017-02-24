@@ -1,11 +1,8 @@
 #external dependencies
 import pyglet
 import pygame
-from pygame.locals import *
-from pygame import gfxdraw
 import math
 import time
-import drawshapes as goodgfx
 import gameUtils as utils
 import random
 
@@ -20,8 +17,8 @@ from accelerate import profiler
 class Game:
 
     def __init__(self):
-        pygame.init()
-        self.screen = pyglet.winow.Window(800, 800)
+        self.screen = pyglet.window.Window(800, 800)
+        self.screen.on_draw = self.on_draw
         self.end = False
 
 
@@ -35,8 +32,6 @@ class Game:
         self.shifting = False
 
     def setup(self):
-        self.gamefont = pygame.font.SysFont("monospace", 15)
-
         self.mapHandler = MapHandler()
 
     def start(self):
@@ -49,7 +44,7 @@ class Game:
         pyglet.app.run()
 
 
-    @game_window.event
+
     def on_draw():
         self.mapHandler.draw(self.mousePos, elapsed)
 

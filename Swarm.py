@@ -1,7 +1,5 @@
 #external dependencies
-import pygame
-from pygame.locals import *
-from pygame import gfxdraw
+import pyglet
 import math
 import time
 import drawshapes as goodgfx

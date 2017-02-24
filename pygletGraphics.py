@@ -1,4 +1,4 @@
 import math
 import pyglet
 
-def makeCircle(radius, posx, posy, resolution)
+#def makeCircle(radius, posx, posy, resolution):
