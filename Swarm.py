@@ -79,8 +79,28 @@ class Ship:
         self.halfsize = self.size//2
         self.amount = amount
         self.position = [position[0], position[1]]
-        self.slope = utils.normDiff(self.position, destination)
-        self.sprite.rotation = math.atan(self.slope[1]/self.slope[0])
+        self.slope = utils.normDiff(self.position, destination)\
+
+        quad = 0; """ |_3_|_0_|     3 = 180+theta 0=-theta
+                      |---s---|
+                      |_2_|_1_|     2 = 180-theta 1 = +theta"""
+        theta = 0
+        if -1*self.slope[1] > 0:       #theta is just the sign of theta to be added and quad is wether or not 180 is there
+            if -1*self.slope[0] > 0:
+                quad = 0
+                theta = -1
+            else:
+                quad = 1
+                theta = 1
+        else:
+            if -1*self.slope[0] > 0:
+                quad = 0
+                theta = 1
+            else:
+                quad = 1
+                theta = -1
+
+        self.sprite.rotation = theta*(math.atan(abs(self.slope[1]/(self.slope[0]+.0001)))*180/math.pi) + quad*180 + 90 #90 is necessary because sprites are facing up by default
 
     def update(self, dt):
         self.position = [self.position[0]-(dt*self.slope[0]), self.position[1]-(dt*self.slope[1])]

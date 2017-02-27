@@ -24,6 +24,7 @@ class Game:
         self.screen.on_key_release = self.on_key_release
         self.screen.on_mouse_press = self.on_mouse_press
         self.screen.on_mouse_release = self.on_mouse_release
+        self.screen.on_mouse_drag = self.on_mouse_drag
         self.end = False
 
 
@@ -62,15 +63,13 @@ class Game:
         #drawing selection box
         if self.selection:
             #use muted or highlighted version of user color for selection
-            width = self.selection[0][0] - self.selection[1][0]
-            height = self.selection[0][1] - self.selection[1][1]
-            posx = self.selection[0][0]
-            posy = self.selection[0][1]
-            primitives.rect(self.selection[0][0], self.selection[0][1], self.selection[1][0], self.selection[1][1], (200, 200, 200, 128), self.guiBatch)
+            primitives.rect(self.selection[0][0], self.selection[0][1], self.selection[1][0], self.selection[1][1], (.1, .1, .1, .5), self.guiBatch, pyglet.graphics.OrderedGroup(3))
             #pygame.draw.rect(self.transparentScreen, (200, 200, 200, 128), (posx, posy, -1*width, -1*height))
 
         #fpstext = pyglet.text.Label(text=str(1000/self.frametime), x=200, y=400) #self.owner.color
         #fpstext.draw()
+
+        self.guiBatch.draw()
 
     def on_update(self, dt):
 
@@ -89,7 +88,15 @@ class Game:
         if self.mouseDown and self.shifting:
             self.selection = (self.mouseDownPos, self.mousePos) #selection is updated
 
+    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
+        self.mousePos = (x, y)
+        if self.mouseDown:
+            self.dragging = True
+        if self.mouseDown and self.shifting:
+            self.selection = (self.mouseDownPos, self.mousePos) #selection is updated
+
     def on_mouse_press(self, x, y, button, modifiers):
+
         self.mousePos = (x, y)
         if button == pyglet.window.mouse.LEFT:
             self.mouseDown = True;
@@ -101,6 +108,7 @@ class Game:
                 self.mapHandler.deselectAll()
 
     def on_mouse_release(self, x, y, button, modifiers):
+
         self.mousePos = (x, y)
         if  button == pyglet.window.mouse.LEFT:
             self.mouseDown = False;
