@@ -1,8 +1,9 @@
 #external dependencies
 import pyglet
+from pyglet import graphics
 import math
 import time
-import drawshapes as goodgfx
+import primitives
 import gameUtils as utils
 import random
 
@@ -40,10 +41,12 @@ class Station:
             self.contents += 1
 
     def draw(self, batch):
-        pygame.draw.circle(screen, self.owner.color, self.position, self.size)  #self.owner.color
+        #pygame.draw.circle(screen, self.owner.color, self.position, self.size)  #self.owner.color
+        nametext = pyglet.text.Label(text=self.owner.name, x=self.position[0], y=self.position[1]+self.size, batch=batch, group=pyglet.graphics.OrderedGroup(1)) #self.owner.color
+        contenttext = pyglet.text.Label(text=str(self.contents), x=self.position[0], y=self.position[1], batch=batch, group=pyglet.graphics.OrderedGroup(1))
 
-        nametext = pyglet.text.Label(text=self.owner.name, x=self.position[0], y=self.position[1]+self.size, batch=batch) #self.owner.color
+        primitives.circle(self.position[0], self.position[1], 30, self.size, self.owner.color, batch, pyglet.graphics.OrderedGroup(0))
 
-        contenttext = pyglet.text.Label(text=self.contents, x=self.position[0], y=self.position[1], batch=batch)
+
         nametext.draw()
         contenttext.draw()

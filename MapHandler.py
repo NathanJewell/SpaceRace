@@ -1,10 +1,8 @@
 #external dependencies
 import pygame
-from pygame.locals import *
-from pygame import gfxdraw
 import math
 import time
-import drawshapes as goodgfx
+import primitives
 import gameUtils as utils
 import random
 
@@ -28,8 +26,8 @@ class MapHandler:
         self.stationBatch = pyglet.graphics.Batch();
 
         #setting up system
-        self.players.append(Player((128,128,128), (255, 0, 0), "neutral"))
-        self.players.append(Player((0, 255, 0), (255, 255, 255), "player1"))
+        self.players.append(Player([128,128,128], [255, 0, 0], "neutral"))
+        self.players.append(Player([0, 255, 0], [255, 255, 255], "player1"))
 
         self.player = self.players[1]
 
@@ -81,7 +79,7 @@ class MapHandler:
         if target:
             for o in self.selection:
                 if target != o:
-                    self.swarms.append(Swarm(int(o.contents * self.attackratio), o, target, self.swarmGraphic))
+                    self.swarms.append(Swarm(int(o.contents * self.attackratio), o, target, self.swarmGraphics, self.swarmBatch))
 
     def selectPoints(self, points, mouse=False):
         for o in self.objects:
@@ -120,35 +118,33 @@ class MapHandler:
                 o.selected = True
                 self.selection.append(o)
 
-    def update(self, elapsed):
-        self.dt = elapsed-self.elapsed
-        self.elapsed = elapsed
+    def update(self, dt):
+
         for o in self.objects:
-            o.update(self.dt)
+            o.update(dt)
 
         for s in self.swarms:
-            s.update(self.dt)
+            s.update(dt)
             if len(s.ships) == 0:
                 self.swarms.remove(s)
 
 
-    def draw(self, screen, font, mousePos, elapsed):
-        self.transparentScreen.fill((0, 0, 0, 0))
-
+    def draw(self, mousePos, elapsed):
+        self.stationBatch = pyglet.graphics.Batch()
+        #self.swarmBatch = pyglet.graphics.Batch()
         for o in self.objects:
-            o.draw(stationBatch)
+            o.draw(self.stationBatch)
 
             if o.selected or o.mouseSelect:
                 #goodgfx.circle(screen, o.owner.selectcolor, o.position, o.size + 10, 5)
-                pygame.draw.circle(screen, o.owner.selectcolor, o.position, o.size+10)
+                #pygame.draw.circle(screen, o.owner.selectcolor, o.position, o.size+10)
+                primitives.circle(o.position[0], o.position[1], 20, o.size + 10, o.owner.selectcolor, self.stationBatch)
                 if not o.mouseSelect:
-                    pygame.gfxdraw.line(screen, o.position[0], o.position[1], mousePos[0], mousePos[1], o.owner.selectcolor)
+                    primitives.line(o.position[0], o.position[1], mousePos[0], mousePos[1], o.owner.selectcolor, self.stationBatch)
+                    #pygame.gfxdraw.line(screen, o.position[0], o.position[1], mousePos[0], mousePos[1], o.owner.selectcolor)
 
 
                 o.mouseSelect = False
-
-        for s in self.swarms:
-            s.draw(self.swarmBatch)
 
         self.swarmBatch.draw()
         self.stationBatch.draw()
