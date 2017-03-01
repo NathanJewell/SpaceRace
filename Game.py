@@ -5,6 +5,7 @@ import math
 import time
 import gameUtils as utils
 import random
+import accelerate
 
 #internal dependencies
 from MapHandler import *
@@ -50,12 +51,19 @@ class Game:
         self.elapsed = 0
         self.framestart = 0
         self.frametime = 1
-        pyglet.clock.schedule_interval(self.on_update, 1/120.0);  #setting update max frames to 120
+        pyglet.clock.schedule(self.on_update);  #setting update max frames to 120
+        p = profiler.Profile(signatures=False)
+        p.enable()
         pyglet.app.run()
+        p.disable()
+        p.print_stats()
+        profiler.plot(p)
 
 
 
     def on_draw(self):
+        pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
+        pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         self.screen.clear()
         self.guiBatch = pyglet.graphics.Batch()
         self.mapHandler.draw(self.mousePos, self.elapsed)
@@ -63,10 +71,10 @@ class Game:
         #drawing selection box
         if self.selection:
             #use muted or highlighted version of user color for selection
-            primitives.rect(self.selection[0][0], self.selection[0][1], self.selection[1][0], self.selection[1][1], (.1, .1, .1, .5), self.guiBatch, pyglet.graphics.OrderedGroup(3))
+            primitives.rect(self.selection[0][0], self.selection[0][1], self.selection[1][0], self.selection[1][1], (200, 0, 200, 128), self.guiBatch, pyglet.graphics.OrderedGroup(3))
             #pygame.draw.rect(self.transparentScreen, (200, 200, 200, 128), (posx, posy, -1*width, -1*height))
 
-        #fpstext = pyglet.text.Label(text=str(1000/self.frametime), x=200, y=400) #self.owner.color
+        print(pyglet.clock.get_fps())
         #fpstext.draw()
 
         self.guiBatch.draw()

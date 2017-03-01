@@ -63,6 +63,7 @@ class Swarm:
         if self.destination.contents <= 0:
             self.destination.owner = self.origin.owner
             self.destination.contents = abs(self.destination.contents)
+            self.destination.capture()
 
     def draw(self, screen):
         pass

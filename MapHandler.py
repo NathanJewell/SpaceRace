@@ -24,6 +24,7 @@ class MapHandler:
         self.tick = 1000	#units generate every one second
         self.swarmBatch = pyglet.graphics.Batch();
         self.stationBatch = pyglet.graphics.Batch();
+        self.updateBatch = pyglet.graphics.Batch()
 
         #setting up system
         self.players.append(Player([128,128,128], [255, 0, 0], "neutral"))
@@ -42,10 +43,10 @@ class MapHandler:
         #self.transparentScreen = pygame.Surface((1920, 1080), pygame.SRCALPHA) #this should be moved to swarm handler
 
 
-        mothership = pyglet.resource.image("mothership.png")
-        cruiser = pyglet.resource.image("cruiser.png")
-        scrapper = pyglet.resource.image("scrapper.png")
-        fighter = pyglet.resource.image("fighter.png")
+        mothership = pyglet.resource.image("C:/Users/Nathan/Desktop/SpaceRace/mothership.png")
+        cruiser = pyglet.resource.image("C:/Users/Nathan/Desktop/SpaceRace/cruiser.png")
+        scrapper = pyglet.resource.image("C:/Users/Nathan/Desktop/SpaceRace/scrapper.png")
+        fighter = pyglet.resource.image("C:/Users/Nathan/Desktop/SpaceRace/fighter.png")
         self.swarmGraphics = [mothership, cruiser, scrapper, fighter]
         for i in self.swarmGraphics:
             utils.center_image(i)
@@ -56,7 +57,7 @@ class MapHandler:
         for x in range(numstations):
             rate = random.randint(minRate, maxRate)
             player = self.players[random.randint(0, len(self.players))-1]
-            station = Station(rate, player, (0, 0)) #position doesn't matter yet we'll be trial and erroring it soon
+            station = Station(rate, player, (0, 0), self.stationBatch) #position doesn't matter yet we'll be trial and erroring it soon
             conflict = True
             while conflict:
                 station.position = (random.randint(0, sizex), random.randint(0, sizey))
@@ -130,17 +131,17 @@ class MapHandler:
 
 
     def draw(self, mousePos, elapsed):
-        self.stationBatch = pyglet.graphics.Batch()
+        self.updateBatch = pyglet.graphics.Batch()
         #self.swarmBatch = pyglet.graphics.Batch()
         for o in self.objects:
-            o.draw(self.stationBatch)
+            o.draw(self.updateBatch)
 
             if o.selected or o.mouseSelect:
                 #goodgfx.circle(screen, o.owner.selectcolor, o.position, o.size + 10, 5)
                 #pygame.draw.circle(screen, o.owner.selectcolor, o.position, o.size+10)
-                primitives.circle(o.position[0], o.position[1], 20, o.size + 10, o.owner.selectcolor, self.stationBatch)
+                primitives.circle(o.position[0], o.position[1], 20, o.size + 10, o.owner.selectcolor, self.updateBatch)
                 if not o.mouseSelect:
-                    primitives.line(o.position[0], o.position[1], mousePos[0], mousePos[1], o.owner.selectcolor, self.stationBatch)
+                    primitives.line(o.position[0], o.position[1], mousePos[0], mousePos[1], o.owner.selectcolor, self.updateBatch)
                     #pygame.gfxdraw.line(screen, o.position[0], o.position[1], mousePos[0], mousePos[1], o.owner.selectcolor)
 
 
@@ -148,3 +149,4 @@ class MapHandler:
 
         self.swarmBatch.draw()
         self.stationBatch.draw()
+        self.updateBatch.draw()

@@ -12,7 +12,7 @@ import random
 
 class Station:
 
-    def __init__(self, rate, owner, position):
+    def __init__(self, rate, owner, position, batch):
         self.rate = rate  #generation speed per minute
         self.interval = int((60/rate)*1000) #time between adding one in ms
         self.size = int(3*math.sqrt(self.rate) + 10)
@@ -23,7 +23,13 @@ class Station:
         self.mouseSelect = False
         self.elapsed = 0
 
+        self.verts = primitives.circle_verts(self.position[0], self.position[1], 30, self.size) #v2i for circle points
+        self.color = []
+        self.capture()
+        batch.add(len(self.verts)//2, pyglet.gl.GL_TRIANGLES, pyglet.graphics.OrderedGroup(0), ('v2i', self.verts), ('c3b', self.color))
 
+    def capture(self):
+        self.color = (self.owner.color*(len(self.verts)//2))
 
     def defend(self, amount):   #defending is losing troops so same as sending troops
         self.contents -= amount
